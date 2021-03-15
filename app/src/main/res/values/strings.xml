@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">ChatApp</string>
+    <string name="enter">ENTRAR</string>
+    <string name="btnReg">Cadastrar-se</string>
+    <string name="register">Ainda não tem uma conta? Cadastre-se.</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="photo">FOTO</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+</resources>
