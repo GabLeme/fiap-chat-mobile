@@ -50,8 +50,11 @@ class MainActivity : AppCompatActivity() {
 
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(OnCompleteListener {
-                if(it.isSuccessful)
-                    it.result?.user?.let { it1 -> Log.i("a", it1.uid) }
+                if(it.isSuccessful){
+                    val messageIntent = Intent(this, MessagesActivity::class.java)
+                    messageIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(messageIntent)
+                }
                 else {
                     makeToast("Falha ao realizar autenticacao")
                 }

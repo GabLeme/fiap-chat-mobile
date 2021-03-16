@@ -8,6 +8,10 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
+    buildFeatures {
+        viewBinding true
+    }
+
     defaultConfig {
         applicationId "com.fiap"
         minSdkVersion 23
@@ -50,4 +54,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx:22.1.0'
     implementation 'com.google.firebase:firebase-storage-ktx:19.2.1'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+//    implementation 'com.xwray:groupie:2.9.0'
+ //   implementation 'com.xwray:groupie-viewbinding:2.9.0'
 }

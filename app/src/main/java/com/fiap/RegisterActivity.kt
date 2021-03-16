@@ -116,7 +116,9 @@ class RegisterActivity : AppCompatActivity() {
                 FirebaseFirestore.getInstance().collection("users")
                         .add(userToBeSaved)
                         .addOnSuccessListener {
-                            makeToast("Usuario registrado com sucesso")
+                            val principalIntent = Intent(this, MessagesActivity::class.java)
+                            principalIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(principalIntent)
                           //  Log.i("userAdded", it.get().result?.id.toString())
                         }
             }
