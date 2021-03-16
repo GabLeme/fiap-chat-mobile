@@ -3,7 +3,7 @@
     <string name="enter">ENTRAR</string>
     <string name="btnReg">Cadastrar-se</string>
     <string name="register">Ainda não tem uma conta? Cadastre-se.</string>
-    <string name="title_activity_register">RegisterActivity</string>
+    <string name="title_activity_register">Registrar-se</string>
     <string name="photo">FOTO</string>
     <!--
     This string is used for square devices and overridden by hello_world in

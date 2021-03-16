@@ -15,17 +15,28 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import com.fiap.entity.User
+import com.fiap.utils.StringUtils
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
+import java.util.*
+import kotlin.math.log
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var selectedUri: Uri
     private lateinit var imgPhoto: ImageView
     private lateinit var btnPhoto: Button
+    private val PICK_IMAGE = 0
+    private lateinit var uriProfile: String
+    private val utils = StringUtils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,20 +53,22 @@ class RegisterActivity : AppCompatActivity() {
         })
 
         btnRegister.setOnClickListener(View.OnClickListener { v ->
-            regUser(editEmail.text.toString(), editPass.text.toString())
+            createAuthentication(editEmail.text.toString(), editPass.text.toString())
         })
     }
 
 
-    fun regUser(email: String, password: String) {
-        if(isNullOrEmpty(email) || isNullOrEmpty(password)) {
-            Toast.makeText(this, "E-mail e senha devem ser preenchidos", Toast.LENGTH_SHORT).show()
+    fun createAuthentication(email: String, password: String) {
+        if(utils.isNullOrEmpty(email) || utils.isNullOrEmpty(password)) {
+            makeToast("E-mail e senha devem ser preenchidos")
             return
         }
 
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(OnCompleteListener {
             if(it.isSuccessful) {
                 it.result?.user?.let { it1 -> Log.i("id", it1.uid) }
+                //saveImg()
+                createUserInstance(auth.uid.toString(), email)
             }
             // tratar os demais itens (it)
         }).addOnFailureListener(OnFailureListener {
@@ -66,8 +79,8 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
-        if(resultCode == 0) {
+        if(requestCode == PICK_IMAGE) {
+            Log.i("values", data.toString())
             selectedUri = data?.data!!
             // verificar build e realizar tratativas < 28  || > 28
             val bitmap = MediaStore.Images.Media.getBitmap(
@@ -80,16 +93,37 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     fun selectPhotoFromGalery() {
-        val pickIntent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(pickIntent, 0)
+        val getIntent = Intent(Intent.ACTION_GET_CONTENT)
+        getIntent.type = "image/*"
 
+        val pickIntent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        pickIntent.type = "image/*"
+
+        val intents = arrayOf(pickIntent)
+
+        val chooserIntent = Intent.createChooser(getIntent, "Selecione uma foto")
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents)
+
+        startActivityForResult(chooserIntent, PICK_IMAGE)
     }
 
+    fun createUserInstance(uuid: String, email: String) {
+        val fileName = UUID.randomUUID().toString()
+        val ref = FirebaseStorage.getInstance().getReference("/images/${fileName}")
+        ref.putFile(selectedUri).addOnSuccessListener {
+            it.storage.downloadUrl.addOnSuccessListener {
+                val userToBeSaved = User(fileName, email, it.toString())
+                FirebaseFirestore.getInstance().collection("users")
+                        .add(userToBeSaved)
+                        .addOnSuccessListener {
+                            makeToast("Usuario registrado com sucesso")
+                          //  Log.i("userAdded", it.get().result?.id.toString())
+                        }
+            }
+        }
+    }
 
-    fun isNullOrEmpty(str: String?): Boolean {
-        if (str != null && !str.trim().isEmpty())
-            return false
-        return true
+    private fun makeToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
