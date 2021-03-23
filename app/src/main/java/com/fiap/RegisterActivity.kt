@@ -30,7 +30,6 @@ import java.util.*
 import kotlin.math.log
 
 class RegisterActivity : AppCompatActivity() {
-    private lateinit var auth: FirebaseAuth
     private lateinit var selectedUri: Uri
     private lateinit var imgPhoto: ImageView
     private lateinit var btnPhoto: Button
@@ -41,7 +40,6 @@ class RegisterActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_register)
-        auth = Firebase.auth
 
         val editEmail = findViewById<EditText>(R.id.editTxtEmail)
         val editPass = findViewById<EditText>(R.id.editTxtPass)
@@ -64,11 +62,10 @@ class RegisterActivity : AppCompatActivity() {
             return
         }
 
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(OnCompleteListener {
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password).addOnCompleteListener(OnCompleteListener {
             if(it.isSuccessful) {
-                it.result?.user?.let { it1 -> Log.i("id", it1.uid) }
+                it.result?.user?.let { it1 -> createUserInstance(it1.uid, email)}
                 //saveImg()
-                createUserInstance(auth.uid.toString(), email)
             }
             // tratar os demais itens (it)
         }).addOnFailureListener(OnFailureListener {
@@ -112,9 +109,10 @@ class RegisterActivity : AppCompatActivity() {
         val ref = FirebaseStorage.getInstance().getReference("/images/${fileName}")
         ref.putFile(selectedUri).addOnSuccessListener {
             it.storage.downloadUrl.addOnSuccessListener {
-                val userToBeSaved = User(fileName, email, it.toString())
+                val userToBeSaved = User(uuid, email, it.toString())
                 FirebaseFirestore.getInstance().collection("users")
-                        .add(userToBeSaved)
+                        .document(uuid)
+                        .set(userToBeSaved)
                         .addOnSuccessListener {
                             val principalIntent = Intent(this, MessagesActivity::class.java)
                             principalIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_NEW_TASK

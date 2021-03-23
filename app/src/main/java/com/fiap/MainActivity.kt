@@ -20,7 +20,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var auth: FirebaseAuth
     private val utils: StringUtils = StringUtils()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         val btnLogin = findViewById<Button>(R.id.btn_login)
         val editTextEmail = findViewById<EditText>(R.id.editTxtEmail)
         val editTextPass = findViewById<EditText>(R.id.editTxtPass)
-        auth = Firebase.auth
         val txtRegister = findViewById<TextView>(R.id.txt_register)
 
         btnLogin.setOnClickListener(View.OnClickListener { v ->
@@ -48,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        auth.signInWithEmailAndPassword(email, password)
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(OnCompleteListener {
                 if(it.isSuccessful){
                     val messageIntent = Intent(this, MessagesActivity::class.java)

@@ -1,7 +1,9 @@
 package com.fiap
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +14,7 @@ import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
+import com.xwray.groupie.OnItemClickListener
 
 
 class ContactsActivity : AppCompatActivity() {
@@ -23,6 +26,18 @@ class ContactsActivity : AppCompatActivity() {
         setContentView(R.layout.act_contacts)
         val rv : RecyclerView = findViewById(R.id.contactsRv)
         rv.adapter = adapter
+
+        adapter.setOnItemClickListener(OnItemClickListener { item, view ->
+            val chatIntent = Intent(this, ChatActivity::class.java)
+            val mItem : ContactItem = item as ContactItem;
+            val u = User()
+            u.email = mItem.email
+            u.uriProfile = mItem.image
+            u.uuid = mItem.uid
+            chatIntent.putExtra("user", u)
+
+            startActivity(chatIntent)
+        })
         fetchUsers()
     }
 
@@ -33,13 +48,13 @@ class ContactsActivity : AppCompatActivity() {
                 docs?.forEach { doc ->
                     val u = doc.toObject(User::class.java)
                     u?.let {
-                        adapter.add(ContactItem(it.email, it.uriProfile))
+                        adapter.add(ContactItem(it.email, it.uriProfile, it.uuid))
                     }
                 }
             })
     }
 
-    private class ContactItem(val email: String, val image: String) : Item<GroupieViewHolder>() {
+    private class ContactItem(val email: String, val image: String, val uid: String) : Item<GroupieViewHolder>() {
 
         override fun getLayout() = R.layout.item_contact
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.fiap" >
+    package="com.fiap">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -10,14 +10,20 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ChatApp" >
-        <activity
-            android:label="Contatos"
-            android:name=".ContactsActivity" >
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MessagesActivity"></meta-data>
+        android:theme="@style/Theme.ChatApp">
+        <activity android:name=".ChatActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MessagesActivity" />
         </activity>
-        <activity android:name=".MessagesActivity" >
+        <activity
+            android:name=".ContactsActivity"
+            android:label="Contatos">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MessagesActivity" />
+        </activity>
+        <activity android:name=".MessagesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,8 +38,7 @@
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
 
-        <activity android:name=".MainActivity" >
-        </activity>
+        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>
