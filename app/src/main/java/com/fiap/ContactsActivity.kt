@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.fiap.entity.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
@@ -48,7 +49,8 @@ class ContactsActivity : AppCompatActivity() {
                 docs?.forEach { doc ->
                     val u = doc.toObject(User::class.java)
                     u?.let {
-                        adapter.add(ContactItem(it.email, it.uriProfile, it.uuid))
+                        if(FirebaseAuth.getInstance().uid != it.uuid)
+                            adapter.add(ContactItem(it.email, it.uriProfile, it.uuid))
                     }
                 }
             })

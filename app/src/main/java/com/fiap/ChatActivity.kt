@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.fiap.entity.Contact
 import com.fiap.entity.Message
 import com.fiap.entity.User
 import com.google.android.gms.tasks.OnSuccessListener
@@ -104,7 +105,18 @@ class ChatActivity : AppCompatActivity() {
                 .collection(toId)
                 .add(msg)
                 .addOnSuccessListener(OnSuccessListener {
-                    Log.i("msg", it.id)
+                    FirebaseFirestore.getInstance().collection("/last-messages")
+                            .document(fromId)
+                            .collection("contacts")
+                            .document(toId)
+                            .set(Contact(
+                                    toId,
+                                    user!!.email,
+                                    msg.text,
+                                    msg.timestamp,
+                                    user!!.uriProfile
+                            ))
+
                 })
 
             FirebaseFirestore.getInstance().collection("/conversations")
@@ -112,7 +124,17 @@ class ChatActivity : AppCompatActivity() {
                 .collection(fromId)
                 .add(msg)
                 .addOnSuccessListener(OnSuccessListener {
-                    Log.i("msg", it.id)
+                    FirebaseFirestore.getInstance().collection("/last-messages")
+                            .document(toId)
+                            .collection("contacts")
+                            .document(fromId)
+                            .set(Contact(
+                                    toId,
+                                    user!!.email,
+                                    msg.text,
+                                    msg.timestamp,
+                                    user!!.uriProfile
+                            ))
                 })
         }
     }
